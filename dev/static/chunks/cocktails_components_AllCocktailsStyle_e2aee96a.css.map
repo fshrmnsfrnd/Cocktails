@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/Nico/Projects/Cocktails_new/cocktails/components/AllCocktailsStyle.css"],"sourcesContent":[".cocktailPreview{\r\n    padding: 10px;\r\n    border: 1px solid #66ffcc;\r\n    text-align: left;\r\n    border-radius: 8px;\r\n    margin: 5px;\r\n}"],"names":[],"mappings":"AAAA"}}]
+}
