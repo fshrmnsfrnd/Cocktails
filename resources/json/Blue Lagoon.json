@@ -1,7 +1,7 @@
 {
     "cocktail_id": null,
     "cocktail_name": "Blue Lagoon",
-    "cocktail_description": "",
+    "cocktail_description": "Blau und spritzig",
     "ingredients": [
         {
             "ingredient_name": "Wodka",
@@ -25,7 +25,7 @@
             "ingredient_name": "Zitronenlimo",
             "amount": null,
             "unit": "etwas",
-            "optional": true
+            "optional": false
         }
     ],
     "steps": [

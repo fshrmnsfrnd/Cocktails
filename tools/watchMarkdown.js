@@ -54,6 +54,20 @@ function parseMarkdownToJson(markdown, fileName) {
     // basic parser tailored to the project's markdown format
     const lines = markdown.split(/\r?\n/);
     const title = path.basename(fileName, path.extname(fileName)).trim();
+    // extract description from blockquote lines (lines starting with '>')
+    // collect consecutive blockquote lines before the first header or table
+    let cocktail_description = '';
+    for (let i = 0; i < lines.length; i++) {
+        const l = lines[i].trim();
+        // stop collecting description when we hit a header or a table start
+        if (l.startsWith('#') || l.startsWith('|')) break;
+        if (l.startsWith('>')) {
+            const txt = l.replace(/^>\s?/, '').trim();
+            if (txt.length > 0) {
+                cocktail_description += (cocktail_description ? '\n' : '') + txt;
+            }
+        }
+    }
 
     // parse table: find first line that starts with '|' and header separator
     let tableStart = -1, tableEnd = -1;
@@ -138,7 +152,7 @@ function parseMarkdownToJson(markdown, fileName) {
     return {
         cocktail_id: null,
         cocktail_name: title,
-        cocktail_description: '',
+        cocktail_description: cocktail_description,
         ingredients,
         steps
     };

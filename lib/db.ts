@@ -9,7 +9,6 @@ export const db = await open({
     driver: sqlite3.Database,
 });
 
-// Ensure schema exists, but do not DROP tables or insert demo data on import.
 await db.exec(`
     CREATE TABLE IF NOT EXISTS Cocktail (
         Cocktail_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -40,3 +39,13 @@ await db.exec(`
         FOREIGN KEY (Ingredient_ID) REFERENCES Ingredient(Ingredient_ID)
     );
 `);
+
+// Clear existing data for testing
+/*
+await db.exec(`
+    DELETE FROM Cocktail;
+    DELETE FROM Step;
+    DELETE FROM Ingredient;
+    DELETE FROM Cocktail_Ingredient;
+    `);
+*/

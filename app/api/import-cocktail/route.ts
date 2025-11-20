@@ -33,7 +33,20 @@ export async function POST(req: NextRequest) {
         // Run everything inside a transaction
         await db.exec("BEGIN TRANSACTION;");
         try {
-            // insert cocktail
+            // If a cocktail with the same name exists, remove it first (replace behavior)
+            const existing = await db.get(
+                `SELECT Cocktail_ID AS id FROM Cocktail WHERE Name = ? COLLATE NOCASE`,
+                [name]
+            );
+
+            if (existing && existing.id) {
+                // remove related rows for the existing cocktail
+                await db.run(`DELETE FROM Step WHERE Cocktail_ID = ?`, [existing.id]);
+                await db.run(`DELETE FROM Cocktail_Ingredient WHERE Cocktail_ID = ?`, [existing.id]);
+                await db.run(`DELETE FROM Cocktail WHERE Cocktail_ID = ?`, [existing.id]);
+            }
+
+            // insert cocktail (new)
             const res = await db.run(
                 `INSERT INTO Cocktail (Name, Description) VALUES (?, ?)`,
                 [name, description]
