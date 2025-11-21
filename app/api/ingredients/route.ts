@@ -7,8 +7,8 @@ export async function GET(request: Request) {
         FROM Ingredient i
         JOIN Cocktail_Ingredient ci
             ON i.Ingredient_ID = ci.Ingredient_ID
-        WHERE ci.Optional = 0;
-        ORDER BY Name ASC
+        WHERE ci.Optional = 0
+        ORDER BY i.Name ASC;
     `;
     
     const ingredients = await db.all(sql);
