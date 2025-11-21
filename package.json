@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "concurrently --kill-others \"npm:watch:resources\" \"npm:watch:json-import\" \"next dev\"",
     "build": "next build",
-    "start": "next start",
+    "start": "concurrently --kill-others \"npm:watch:resources\" \"npm:watch:json-import\" \"next start\"",
     "lint": "eslint",
     "watch:resources": "node tools/watchMarkdown.js",
     "watch:json-import": "node tools/watch-json-importer.js"

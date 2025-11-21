@@ -1,6 +1,6 @@
 'use client'
 import { useParams, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 
 type Ingredient = {
     id: number;
@@ -15,8 +15,14 @@ type Selected = {
     ingredients: Ingredient[];
     steps: Step[];
 };
-
-export default function CocktailDetail() {
+export default function CocktailWrapper(){
+    return(
+        <Suspense fallback={<div>Loading cocktail details…</div>}>
+            <CocktailDetail />
+        </Suspense>
+    )
+}
+export function CocktailDetail() {
     const [error, setError] = useState<string | null>(null);
     const [selected, setSelected] = useState<Selected | null>(null);
     const [loading, setLoading] = useState(false);

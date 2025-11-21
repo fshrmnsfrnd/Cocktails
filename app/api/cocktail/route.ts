@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest) {
     const id = parseInt(req.nextUrl.searchParams.get("id") || "", 10);
     if (!id) {
         return NextResponse.json({ error: "Missing id query parameter" }, { status: 400 });
