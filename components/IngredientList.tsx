@@ -19,6 +19,30 @@ export default function IngredientList({ onFilterChange, searchTerm, amountMissi
     const [error, setError] = useState<string | null>(null);
     const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
 
+    const COOKIE_NAME = 'selectedIngredients';
+
+    function setCookie(name: string, value: string, days: number) {
+        try {
+            const d = new Date();
+            d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+            const expires = 'expires=' + d.toUTCString();
+            document.cookie = `${name}=${encodeURIComponent(value)}; ${expires}; path=/; SameSite=Lax`;
+        } catch (e) {
+            // ignore cookie errors in strict environments
+        }
+    }
+
+    function getCookie(name: string) {
+        try {
+            const cookies = document.cookie ? document.cookie.split('; ') : [];
+            const found = cookies.find(c => c.startsWith(name + '='));
+            if (!found) return null;
+            return decodeURIComponent(found.split('=').slice(1).join('='));
+        } catch (e) {
+            return null;
+        }
+    }
+
     async function loadCocktails(): Promise<void> {
         setError(null);
         try {
@@ -79,6 +103,12 @@ export default function IngredientList({ onFilterChange, searchTerm, amountMissi
             const next = new Set(prev);
             if (next.has(id)) next.delete(id);
             else next.add(id);
+            try {
+                const arr = Array.from(next.values());
+                setCookie(COOKIE_NAME, JSON.stringify(arr), 7);
+            } catch (e) {
+                // swallow cookie write errors
+            }
             return next;
         });
     }
@@ -88,6 +118,28 @@ export default function IngredientList({ onFilterChange, searchTerm, amountMissi
         updateFilterFromSelection(Array.from(selectedIds.values()));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedIds, amountMissingIngredients]);
+
+    // Restore selection from cookie after ingredients are loaded
+    useEffect(() => {
+        if (!Array.isArray(ingredients) || ingredients.length === 0) return;
+        try {
+            const raw = getCookie(COOKIE_NAME);
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed)) return;
+            const idNums = parsed.map((v: any) => {
+                const n = Number(v);
+                return Number.isFinite(n) ? Math.trunc(n) : null;
+            }).filter((v: number | null) => v !== null) as number[];
+
+            // Keep only ids that exist in the current ingredients list
+            const availableIds = new Set(ingredients.map(i => i.Ingredient_ID).filter(Boolean) as number[]);
+            const restored = idNums.filter(id => availableIds.has(id));
+            if (restored.length > 0) setSelectedIds(new Set(restored));
+        } catch (e) {
+            // ignore parse errors
+        }
+    }, [ingredients]);
 
     const term = (searchTerm ?? '').trim().toLowerCase();
     const filteredIngredients = Array.isArray(ingredients)
