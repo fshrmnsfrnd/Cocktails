@@ -1,6 +1,7 @@
 'use client'
 import { useParams, useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
+import Timer from "@/components/Timer";
 
 type Ingredient = {
     id: number;
@@ -85,6 +86,9 @@ export function CocktailDetail() {
         return () => { cancelled = true; };
     }, [id]);
 
+    const time = new Date();
+    time.setSeconds(time.getSeconds() + 600);
+
     if (id == null) return null;
 
     return (
@@ -121,16 +125,21 @@ export function CocktailDetail() {
                         </table>
 
                         {selected.steps.length != 0 && (
-                            <div>
-                                <h3>Zubereitung</h3>
-                                <ul>
-                                    {selected.steps.map((s) => (
-                                        <li key={s.id}>{s.number}. {s.description}</li>
-                                    ))}
-                                </ul>
+                            <div className="prep-timer-row">
+                                <div className="prep-content">
+                                    <h3>Zubereitung</h3>
+                                    <ul>
+                                        {selected.steps.map((s) => (
+                                            <li key={s.id}>{s.number}. {s.description}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                <div className="timer-box">
+                                    <Timer expiryTimestamp={time} />
+                                </div>
                             </div>
-                            )
-                        }
+                        )}
                     </>
                 )}
             </div>

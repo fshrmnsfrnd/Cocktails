@@ -1,0 +1,94 @@
+/* Preparation + Timer layout */
+.prep-timer-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.prep-content {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.timer-box {
+    flex: 0 0 auto;
+    margin-left: 16px;
+}
+
+/* Ensure timer doesn't grow too wide */
+.timer-box .timer-inner {
+    max-width: 147px;
+}
+
+/* Timer component styles (moved from inline styles) */
+.timer-inner{
+    text-align: center;
+    border: 1px solid #66ffcc;
+    border-radius: 8px;
+    padding: 3px 10px;
+    background: rgba(0,0,0,0.25);
+    box-sizing: border-box;
+}
+
+.timer-title{
+    margin: 0 0 6px 0;
+}
+
+.timer-display{
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
+
+.time-column{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.time-sep{
+    align-self: center;
+    padding: 0 0px;
+}
+
+.time-value{
+    width: 100%;
+    text-align: center;
+}
+
+.time-btn{
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.timer-controls{
+    margin-top: 5px;
+}
+
+.control-action{
+    padding: 6px 8px;
+    border-radius: 6px;
+    background-color: #33cccc;
+    color: #1a1a1a;
+    cursor: pointer;
+}
+
+.control-reset{
+    margin-left: 8px;
+}
+
+/* Portrait: place timer fixed at bottom center and give page bottom padding */
+@media (orientation: portrait) {
+    .prep-timer-row {
+            display: block;
+        }
+}
