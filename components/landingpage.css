@@ -58,4 +58,22 @@ li{
         box-sizing: border-box;
         padding: 8px;
     }
+
+    /* Make text/number inputs easier to tap in portrait mode */
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+        font-size: 1.125rem;
+        padding: 12px;
+    }
+
+    /* Limit width inside display areas while keeping inputs centered */
+    .displayArea input[type="text"],
+    .displayArea input[type="number"],
+    .displayArea textarea {
+        width: 92%;
+        max-width: 640px;
+        box-sizing: border-box;
+    }
 }

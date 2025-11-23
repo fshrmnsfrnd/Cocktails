@@ -10,6 +10,14 @@ export default function Home() {
   const [cocktailSearch, setCocktailSearch] = useState<string>("");
   const [missingAmount, setMissingAmount] = useState<number>();
 
+  function decreaseAmount() {
+      setMissingAmount((prev) => (prev && prev > 0 ? prev - 1 : 0));
+    };
+  
+  function increaseAmount() {
+      setMissingAmount((prev) => (prev ? prev + 1 : 1));
+    };
+
   return (
     <div>
       <header>
@@ -46,17 +54,39 @@ export default function Home() {
           </div>
           <div style={{ marginBottom: 12, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <label htmlFor="amountOfMissingIngredients">Anzahl der Zutaten, die fehlen dürfen:</label>
-            <input
-              id="amountOfMissingIngredients"
-              type="number"
-              placeholder="Anzahl..."
-              value={missingAmount ?? 0}
-              onChange={(e) => setMissingAmount(Number(e.target.value))}
-              aria-label="Anzahl fehlender Zutaten"
-            />
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <button
+                id="decreaseAmount"
+                type="button"
+                aria-label="Verringern"
+                onClick={decreaseAmount}
+              >
+                −
+              </button>
+              <input
+                id="amountOfMissingIngredients"
+                type="number"
+                placeholder="Anzahl..."
+                value={missingAmount ?? 0}
+                onChange={(e) => {
+                  const n = parseInt(e.target.value, 10);
+                  setMissingAmount(Number.isFinite(n) ? n : 0);
+                }}
+                aria-label="Anzahl fehlender Zutaten"
+                style={{ width: '6ch', minWidth: '3ch', textAlign: 'center' }}
+              />
+              <button
+                id="increaseAmount"
+                type="button"
+                aria-label="Erhöhen"
+                onClick={increaseAmount}
+              >
+                +
+              </button>
+            </div>
           </div>
           <IngredientList onFilterChange={setFilteredCocktailIds} searchTerm={ingredientSearch} amountMissingIngredients={missingAmount} />
-          <button><a href="#">Nach oben</a></button>
+          <button style={{ display: 'block', margin: '12px auto' }}><a href="#">Nach oben</a></button>
         </div>
 
         <div className="displayArea" data-visible={selectedPanel === 'cocktails' ? 'true' : 'false'}>
@@ -71,7 +101,7 @@ export default function Home() {
             />
           </div>
           <AllCocktails filterIds={filteredCocktailIds} searchTerm={cocktailSearch}/>
-          <button><a href="#">Nach oben</a></button>
+          <button style={{ display: 'block', margin: '12px auto' }}><a href="#">Nach oben</a></button>
         </div>
       </div>
     </div>
