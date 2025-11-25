@@ -8,7 +8,7 @@ type Ingredient = {
 };
 
 type Props = {
-    onFilterChange?: (cocktailIds: number[] | null) => void;
+    onFilterChange?: (cocktailIds: number[] | null, source: 'ingredients' | 'categories') => void;
     searchTerm?: string | null;
     amountMissingIngredients?: number;
 };
@@ -69,7 +69,7 @@ export default function IngredientList({ onFilterChange, searchTerm, amountMissi
     async function updateFilterFromSelection(newSelected: number[]) {
         // no selection => show all
         if (!newSelected || newSelected.length === 0) {
-            onFilterChange?.(null);
+            onFilterChange?.(null, 'ingredients');
             return;
         }
 
@@ -87,13 +87,13 @@ export default function IngredientList({ onFilterChange, searchTerm, amountMissi
 
             if (Array.isArray(data)) {
                 const ids = data.map((v: any) => Number(v)).filter((n: number) => Number.isFinite(n));
-                onFilterChange?.(ids);
+                onFilterChange?.(ids, 'ingredients');
             } else {
                 // unexpected response -> clear filter
-                onFilterChange?.(null);
+                onFilterChange?.(null, 'ingredients');
             }
         } catch (ex) {
-            onFilterChange?.(null);
+            onFilterChange?.(null, 'ingredients');
             setError(ex instanceof Error ? ex.message : String(ex));
         }
     }

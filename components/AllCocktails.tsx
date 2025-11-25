@@ -6,17 +6,6 @@ type CocktailRow = {
     Cocktail_ID?: number;
     Name?: string;
     Description?: string;
-    [key: string]: any;
-};
-
-type Ingredient = { id: number; name: string };
-type Step = { id: number; number?: number; description?: string };
-
-type Selected = {
-    name: string;
-    description: string;
-    ingredients: Ingredient[];
-    steps: Step[];
 };
 
 type Props = {
@@ -34,8 +23,7 @@ export default function AllCocktails({ filterIds, searchTerm}: Props) {
             const res = await fetch('/api/cocktails');
             const ct = res.headers.get("content-type") || "";
             let data: any;
-            if (ct.includes("application/json")) data = await res.json();
-            else data = await res.text();
+            data = await res.json();
 
             if (Array.isArray(data)) {
                 setCocktails(data as CocktailRow[]);
@@ -51,9 +39,14 @@ export default function AllCocktails({ filterIds, searchTerm}: Props) {
     
     useEffect(() => { loadCocktails(); }, []);
     
-    const visible = Array.isArray(cocktails)
-        ? (filterIds == null ? cocktails : cocktails.filter(c => filterIds.includes(c.Cocktail_ID as number)))
-        : null;
+    let visible;
+    if (Array.isArray(cocktails)){
+        if (filterIds == null){
+                visible = cocktails;
+        }else{
+            visible = cocktails.filter(c => filterIds.includes(c.Cocktail_ID as number))
+        }
+    }
 
     const term = (searchTerm ?? '').trim().toLowerCase();
     const visibleFiltered = Array.isArray(visible) ? (term ? visible.filter(c => {

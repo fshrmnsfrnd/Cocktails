@@ -8,7 +8,8 @@ type Category = {
 };
 
 type Props = {
-    onFilterChange?: (cocktailIds: number[] | null) => void;
+    // callback will be invoked with (ids, source). Source is always "categories" when called from here.
+    onFilterChange?: (cocktailIds: number[] | null, source: 'ingredients' | 'categories') => void;
     searchTerm?: string | null;
 };
 
@@ -68,7 +69,7 @@ export default function CategoryList({ onFilterChange, searchTerm}: Props) {
     async function updateFilterFromSelection(newSelected: number[]) {
         // no selection => show all
         if (!newSelected || newSelected.length === 0) {
-            onFilterChange?.(null);
+            onFilterChange?.(null, 'categories');
             return;
         }
 
@@ -86,13 +87,13 @@ export default function CategoryList({ onFilterChange, searchTerm}: Props) {
 
             if (Array.isArray(data)) {
                 const ids = data.map((v: any) => Number(v)).filter((n: number) => Number.isFinite(n));
-                onFilterChange?.(ids);
+                onFilterChange?.(ids, 'categories');
             } else {
                 // unexpected response -> clear filter
-                onFilterChange?.(null);
+                onFilterChange?.(null, 'categories');
             }
         } catch (ex) {
-            onFilterChange?.(null);
+            onFilterChange?.(null, 'categories');
             setError(ex instanceof Error ? ex.message : String(ex));
         }
     }

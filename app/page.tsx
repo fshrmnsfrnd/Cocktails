@@ -2,7 +2,7 @@
 import AllCocktails from "@/components/AllCocktails";
 import IngredientList from "@/components/IngredientList";
 import CategoryList from "@/components/CategoryList";
-import { Children, useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Accordion,
     AccordionContent,
@@ -12,6 +12,8 @@ import {
 
 export default function Home() {
     const [filteredCocktailIds, setFilteredCocktailIds] = useState<number[] | null>(null);
+    const [ingFilteredIds, setIngFilteredIds] = useState<number[] | null>(null); //RecipeID filtered by Ingredient
+    const [catFilteredIds, setCatFilteredIds] = useState<number[] | null>(null); //RecipeID filtered by Category
     const [selectedPanel, setSelectedPanel] = useState<'cocktails' | 'ingredients'>('cocktails');
     const [ingredientSearch, setIngredientSearch] = useState<string>("");
     const [categorySearch, setCategorySearch] = useState<string>("");
@@ -26,14 +28,33 @@ export default function Home() {
         setMissingAmount((prev) => (prev ? prev + 1 : 1));
     };
 
-    function handleFilterChange(ids: number[] | null) {
-        console.log('parent got ids', ids);
-        setFilteredCocktailIds(ids);
+    function handleFilterChange(ids: number[] | null, source: 'ingredients' | 'categories') {
+        // only update the corresponding source state here; derivation is handled by an effect
+        console.log(source + ' ->', ids);
+        if (source === 'ingredients') {
+            setIngFilteredIds(ids);
+            return;
+        }
+        setCatFilteredIds(ids);
     }
 
+    // Derive the final filter IDs to pass to AllCocktails
+    useEffect(() => {
+        const a = ingFilteredIds || [];
+        const b = catFilteredIds || [];
+        if (a.length === 0 && b.length === 0){setFilteredCocktailIds(null);return;}
+        if (a.length === 0){setFilteredCocktailIds(b);return;}
+        if (b.length === 0){setFilteredCocktailIds(a);return;}
+
+        const setA = new Set(a);
+        const intersection = b.filter(id => setA.has(id));
+        setFilteredCocktailIds(intersection);
+    }, [ingFilteredIds, catFilteredIds]);
+    
     return (
         <div>
             {/*Head of Page*/}
+            <button className="button" onClick={() => handleFilterChange([1, 2, 3], 'categories')}>test</button>
             <header className="header">
                 <a href="/"><h1 className="h1">Cocktails</h1></a>
                 <div className="showRow">
@@ -132,8 +153,8 @@ export default function Home() {
                                         aria-label="Suche Kategorien"
                                     />
 
-                                    {/*The List of Ingredients */}
-                                    <CategoryList onFilterChange={setFilteredCocktailIds} searchTerm={categorySearch} />
+                                    {/*The List of Categories */}
+                                    <CategoryList onFilterChange={handleFilterChange} searchTerm={categorySearch} />
                                     <button className="button upButton"><a href="#">Nach oben</a></button>
                                 </div>
                             </AccordionContent>
