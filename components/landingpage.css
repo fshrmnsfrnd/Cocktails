@@ -75,6 +75,17 @@
     box-sizing: border-box;
 }
 
+.categoryArea {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* center children horizontally */
+    justify-content: flex-start;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .searchTextField{
     margin-bottom: 12px;
     margin-top: 5px;

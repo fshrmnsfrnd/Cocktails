@@ -50,20 +50,17 @@ export default function AllCocktails({ filterIds, searchTerm}: Props) {
     }
     
     useEffect(() => { loadCocktails(); }, []);
+    
     const visible = Array.isArray(cocktails)
         ? (filterIds == null ? cocktails : cocktails.filter(c => filterIds.includes(c.Cocktail_ID as number)))
         : null;
 
     const term = (searchTerm ?? '').trim().toLowerCase();
-    const visibleFiltered = Array.isArray(visible)
-        ? (term
-            ? visible.filter(c => {
-                const name = (c.Name ?? '').toString().toLowerCase();
-                const desc = (c.Description ?? '').toString().toLowerCase();
-                return name.includes(term) || desc.includes(term);
-            })
-            : visible)
-        : null;
+    const visibleFiltered = Array.isArray(visible) ? (term ? visible.filter(c => {
+        const name = (c.Name ?? '').toString().toLowerCase();
+        const desc = (c.Description ?? '').toString().toLowerCase();
+        return name.includes(term) || desc.includes(term);
+    }): visible): null;
 
     return (
         <div className="cocktailArea">

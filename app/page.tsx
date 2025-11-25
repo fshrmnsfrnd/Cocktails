@@ -17,6 +17,7 @@ export default function Home() {
     const [categorySearch, setCategorySearch] = useState<string>("");
     const [cocktailSearch, setCocktailSearch] = useState<string>("");
     const [missingAmount, setMissingAmount] = useState<number>();
+
     function decreaseAmount() {
         setMissingAmount((prev) => (prev && prev > 0 ? prev - 1 : 0));
     };
@@ -24,6 +25,11 @@ export default function Home() {
     function increaseAmount() {
         setMissingAmount((prev) => (prev ? prev + 1 : 1));
     };
+
+    function handleFilterChange(ids: number[] | null) {
+        console.log('parent got ids', ids);
+        setFilteredCocktailIds(ids);
+    }
 
     return (
         <div>
@@ -82,7 +88,7 @@ export default function Home() {
                                             </button>
                                             <input
                                                 id="amountOfMissingIngredients"
-                                                className="numberInput"
+                                                className="input"
                                                 type="number"
                                                 placeholder="Anzahl..."
                                                 value={missingAmount ?? 0}
@@ -105,7 +111,7 @@ export default function Home() {
                                     </div>
 
                                     {/*The List of Ingredients */}
-                                    <IngredientList onFilterChange={setFilteredCocktailIds} searchTerm={ingredientSearch} amountMissingIngredients={missingAmount} />
+                                    <IngredientList onFilterChange={handleFilterChange} searchTerm={ingredientSearch} amountMissingIngredients={missingAmount} />
                                     <button className="button upButton"><a href="#">Nach oben</a></button>
                                 </div>
                             </AccordionContent>
@@ -113,58 +119,21 @@ export default function Home() {
                         <AccordionItem value="categoryArea">
                             <AccordionTrigger className="text-2xl">Kategorien</AccordionTrigger>
                             <AccordionContent>
-                                <div className="ingredientArea">
-                                    {/*Search ingredient:*/}
+                                <div className="categoryArea">
+                                    {/*Search Category:*/}
 
                                     <input
-                                        id="ingredient-search"
+                                        id="category-search"
                                         className="input searchTextField"
                                         type="text"
                                         placeholder="Suchbegriff..."
-                                        value={ingredientSearch}
-                                        onChange={(e) => setIngredientSearch(e.target.value)}
-                                        aria-label="Suche Zutaten"
+                                        value={categorySearch}
+                                        onChange={(e) => setCategorySearch(e.target.value)}
+                                        aria-label="Suche Kategorien"
                                     />
 
-                                    {/*Enter Amount of allowed missing Ingredients */}
-                                    <div className="centered-column" style={{ marginBottom: 12 }}>
-                                        <label className="label">Anzahl der Zutaten, die fehlen dürfen:</label>
-                                        <div className="centered-row" style={{ gap: 8 }}>
-                                            <button
-                                                id="decreaseAmount"
-                                                className="button"
-                                                type="button"
-                                                aria-label="Verringern"
-                                                onClick={decreaseAmount}
-                                            >
-                                                -
-                                            </button>
-                                            <input
-                                                id="amountOfMissingIngredients"
-                                                className="numberInput"
-                                                type="number"
-                                                placeholder="Anzahl..."
-                                                value={missingAmount ?? 0}
-                                                onChange={(e) => {
-                                                    const n = parseInt(e.target.value, 10);
-                                                    setMissingAmount(Number.isFinite(n) ? n : 0);
-                                                }}
-                                                aria-label="Anzahl fehlender Zutaten"
-                                            />
-                                            <button
-                                                id="increaseAmount"
-                                                className="button"
-                                                type="button"
-                                                aria-label="Erhöhen"
-                                                onClick={increaseAmount}
-                                            >
-                                                +
-                                            </button>
-                                        </div>
-                                    </div>
-
                                     {/*The List of Ingredients */}
-                                    <IngredientList onFilterChange={setFilteredCocktailIds} searchTerm={ingredientSearch} amountMissingIngredients={missingAmount} />
+                                    <CategoryList onFilterChange={setFilteredCocktailIds} searchTerm={categorySearch} />
                                     <button className="button upButton"><a href="#">Nach oben</a></button>
                                 </div>
                             </AccordionContent>
