@@ -29,41 +29,36 @@ export default function Home() {
     };
 
     function handleFilterChange(ids: number[] | null, source: 'ingredients' | 'categories') {
-        if(source === 'ingredients'){
-            if(ids == null){
-                setIngFilteredIds(null);
-            }else if(ids.length === 0){
-                setIngFilteredIds([])
-            }else{
-                setIngFilteredIds(ids)
-            }
-            
-        }else if(source === 'categories'){
-            setCatFilteredIds(ids);
+        let nextIng: number[] | null = ingFilteredIds;
+        let nextCat: number[] | null = catFilteredIds;
+
+        if (source === 'ingredients') {
+            nextIng = ids === null ? null : Array.from(ids);
+            setIngFilteredIds(ids === null ? null : (ids.length === 0 ? [] : ids));
+        } else {
+            nextCat = ids === null ? null : Array.from(ids);
+            setCatFilteredIds(ids === null ? null : (ids.length === 0 ? [] : ids));
         }
 
-        console.log("----------------------------")
-        console.log("providedIDs: " + ids?.toString())
-        console.log("catIDs: " + catFilteredIds?.toString())
-        console.log("ingIDs: " + ingFilteredIds?.toString())
-        
-        //wenn ein oder beide filter nicht gesetzt sind
-        if(ingFilteredIds == undefined && catFilteredIds == undefined){
-            console.log("beide null")
+        if (nextIng === null && nextCat === null) {
             setFilteredCocktailIds(null);
-        }else if(ingFilteredIds && !catFilteredIds){
-            console.log("Cats null")
-            setFilteredCocktailIds(ingFilteredIds);
-        }else if(!ingFilteredIds && catFilteredIds){
-            console.log("Ings null")
-            setFilteredCocktailIds(catFilteredIds);
-        }else{
-            console.log("both set")
-            const ingSet: Set<number> = new Set(ingFilteredIds);
-            const intersection: number[] = catFilteredIds?.filter(id => ingSet.has(id)) || [];
-            setFilteredCocktailIds(intersection);
+            return;
         }
-        console.log("outIds: " + filteredCocktailIds?.toString());
+
+        if (nextIng !== null && nextCat === null) {
+            setFilteredCocktailIds(nextIng);
+            return;
+        }
+
+        if (nextIng === null && nextCat !== null) {
+            setFilteredCocktailIds(nextCat);
+            return;
+        }
+
+        // both null or empty
+        const ingSet = new Set(nextIng as number[]);
+        const intersection = (nextCat as number[]).filter(id => ingSet.has(id));
+        setFilteredCocktailIds(intersection);
         return;
     }
     
