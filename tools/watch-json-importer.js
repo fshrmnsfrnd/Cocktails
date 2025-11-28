@@ -97,7 +97,7 @@ function postJsonToApi(jsonPath_1) {
                     _b.label = 1;
                 case 1:
                     _b.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, fetch('http://localhost:3000/api/import-cocktail', {
+                    return [4 /*yield*/, fetch('/api/import-cocktail', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json', 'API_KEY': (_a = process.env.API_KEY) !== null && _a !== void 0 ? _a : '' },
                             body: JSON.stringify(parsed),
@@ -107,7 +107,7 @@ function postJsonToApi(jsonPath_1) {
                     res.json();
                     //try again if not succesfull
                     if (res.status != 201 && attempt <= maxAttempts) {
-                        console.error('fetch-error | API: import-cocktail | message: |' + res);
+                        console.error('fetch-error | API: import-cocktail | message: |' + res.json());
                         delay = 200 * Math.pow(2, attempt);
                         setTimeout(function () { return postJsonToApi(jsonPath, attempt + 1); }, delay);
                     }
@@ -140,7 +140,7 @@ function postRemoveToApi(jsonPath_1) {
                     _b.label = 1;
                 case 1:
                     _b.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, fetch('http://localhost:3000/api/remove-cocktail', {
+                    return [4 /*yield*/, fetch('/api/remove-cocktail', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json', 'API_KEY': (_a = process.env.API_KEY) !== null && _a !== void 0 ? _a : '' },
                             body: JSON.stringify({ name: name }),
@@ -150,7 +150,7 @@ function postRemoveToApi(jsonPath_1) {
                     res.json();
                     //try again if not succesfull
                     if (res.status != 200 && attempt <= maxAttempts) {
-                        console.error('fetch-error | API: remove-cocktail | message: |' + res);
+                        console.error('fetch-error | API: remove-cocktail | message: |' + res.json());
                         delay = 200 * Math.pow(2, attempt);
                         setTimeout(function () { return postRemoveToApi(jsonPath, attempt + 1); }, delay);
                     }

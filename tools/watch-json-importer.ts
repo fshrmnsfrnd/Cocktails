@@ -59,7 +59,7 @@ async function postJsonToApi(jsonPath:string, attempt:number = 1) {
         const maxAttempts = 5;
         var res;
         try{
-            res = await fetch('http://localhost:3000/api/import-cocktail', {
+            res = await fetch('/api/import-cocktail', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'API_KEY': process.env.API_KEY ?? '' },
                 body: JSON.stringify(parsed),
@@ -68,7 +68,7 @@ async function postJsonToApi(jsonPath:string, attempt:number = 1) {
 
             //try again if not succesfull
             if(res.status != 201 && attempt <= maxAttempts){
-                console.error('fetch-error | API: import-cocktail | message: |' + res);
+                console.error('fetch-error | API: import-cocktail | message: |' + res.json());
                 const delay = 200 * Math.pow(2, attempt);
                 setTimeout(() => postJsonToApi(jsonPath, attempt + 1), delay);
             }
@@ -89,7 +89,7 @@ async function postRemoveToApi(jsonPath: string, attempt = 1) {
     var res;
 
     try {
-        res = await fetch('http://localhost:3000/api/remove-cocktail', {
+        res = await fetch('/api/remove-cocktail', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'API_KEY': process.env.API_KEY ?? '' },
             body: JSON.stringify({ name }),
@@ -98,7 +98,7 @@ async function postRemoveToApi(jsonPath: string, attempt = 1) {
 
         //try again if not succesfull
         if (res.status != 200 && attempt <= maxAttempts) {
-            console.error('fetch-error | API: remove-cocktail | message: |' + res);
+            console.error('fetch-error | API: remove-cocktail | message: |' + res.json());
             const delay = 200 * Math.pow(2, attempt);
             setTimeout(() => postRemoveToApi(jsonPath, attempt + 1), delay);
         }
