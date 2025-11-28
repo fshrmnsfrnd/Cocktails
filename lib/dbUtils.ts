@@ -22,12 +22,12 @@ export type CocktailData = {
 	categories?: CategoryInput[];
 };
 
-export async function cocktailExists(name: string): Promise<{ exists: boolean; id?: number }> {
+export async function cocktailExists(name: string): Promise<{ exists: boolean; id?: number, name?: string }> {
 	const trimmed = name.trim();
 	if (!trimmed) return { exists: false };
-	const row = await db.get(`SELECT Cocktail_ID AS id FROM Cocktail WHERE Name = ? COLLATE NOCASE`, [trimmed]);
+	const row = await db.get(`SELECT Cocktail_ID AS id, Name as name FROM Cocktail WHERE Name = ? COLLATE NOCASE`, [trimmed]);
 	if (!row || !row.id) return { exists: false };
-	return { exists: true, id: row.id };
+	return { exists: true, id: row.id, name: row.name };
 }
 
 export async function getCocktailIdByName(name: string): Promise<number | null> {
