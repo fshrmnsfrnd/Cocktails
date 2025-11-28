@@ -67,13 +67,13 @@ function shouldEmit(key) {
 }
 function postJsonToApi(jsonPath_1) {
     return __awaiter(this, arguments, void 0, function (jsonPath, attempt) {
-        var content, parsed, maxAttempts, res, delay, ex_1, ex_2;
+        var content, parsed, maxAttempts, res, bodyText, e_1, delay, ex_1, ex_2;
         var _a;
         if (attempt === void 0) { attempt = 1; }
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 5, , 6]);
+                    _b.trys.push([0, 9, , 10]);
                     content = fs.readFileSync(jsonPath, 'utf8');
                     parsed = void 0;
                     try {
@@ -93,42 +93,54 @@ function postJsonToApi(jsonPath_1) {
                         console.warn('skipped | path: ' + path.relative(projectRoot, jsonPath) + ' | message: |' + 'No Ingredients');
                         return [2 /*return*/];
                     }
-                    maxAttempts = 5;
+                    maxAttempts = 7;
                     _b.label = 1;
                 case 1:
-                    _b.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, fetch('/api/import-cocktail', {
+                    _b.trys.push([1, 7, , 8]);
+                    return [4 /*yield*/, fetch('http://localhost:3000/api/import-cocktail', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json', 'API_KEY': (_a = process.env.API_KEY) !== null && _a !== void 0 ? _a : '' },
                             body: JSON.stringify(parsed),
                         })];
                 case 2:
                     res = _b.sent();
-                    res.json();
-                    //try again if not succesfull
-                    if (res.status != 201 && attempt <= maxAttempts) {
-                        console.error('fetch-error | API: import-cocktail | message: |' + res.json());
-                        delay = 200 * Math.pow(2, attempt);
+                    bodyText = '<no-body>';
+                    _b.label = 3;
+                case 3:
+                    _b.trys.push([3, 5, , 6]);
+                    return [4 /*yield*/, res.text()];
+                case 4:
+                    bodyText = _b.sent();
+                    return [3 /*break*/, 6];
+                case 5:
+                    e_1 = _b.sent();
+                    bodyText = '<body-read-error>';
+                    return [3 /*break*/, 6];
+                case 6:
+                    // try again if not successful
+                    if (res.status !== 201 && attempt <= maxAttempts) {
+                        console.error('fetch-error | API: import-cocktail | status: ' + res.status + ' | message: |' + bodyText);
+                        delay = 2000 * Math.pow(2, attempt);
                         setTimeout(function () { return postJsonToApi(jsonPath, attempt + 1); }, delay);
                     }
-                    return [3 /*break*/, 4];
-                case 3:
+                    return [3 /*break*/, 8];
+                case 7:
                     ex_1 = _b.sent();
                     console.error('fetch-error | API: import-cocktail | message: |' + (ex_1 instanceof Error ? ex_1.message : String(ex_1)));
-                    return [3 /*break*/, 4];
-                case 4: return [3 /*break*/, 6];
-                case 5:
+                    return [3 /*break*/, 8];
+                case 8: return [3 /*break*/, 10];
+                case 9:
                     ex_2 = _b.sent();
                     console.error('error | path: ' + path.relative(projectRoot, jsonPath) + ' | message: |' + (ex_2 instanceof Error ? ex_2.message : String(ex_2)));
-                    return [3 /*break*/, 6];
-                case 6: return [2 /*return*/];
+                    return [3 /*break*/, 10];
+                case 10: return [2 /*return*/];
             }
         });
     });
 }
 function postRemoveToApi(jsonPath_1) {
     return __awaiter(this, arguments, void 0, function (jsonPath, attempt) {
-        var base, name, maxAttempts, res, delay, ex_3;
+        var base, name, maxAttempts, res, bodyText, e_2, delay, ex_3;
         var _a;
         if (attempt === void 0) { attempt = 1; }
         return __generator(this, function (_b) {
@@ -139,27 +151,39 @@ function postRemoveToApi(jsonPath_1) {
                     maxAttempts = 5;
                     _b.label = 1;
                 case 1:
-                    _b.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, fetch('/api/remove-cocktail', {
+                    _b.trys.push([1, 7, , 8]);
+                    return [4 /*yield*/, fetch('http://localhost:3000/api/remove-cocktail', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json', 'API_KEY': (_a = process.env.API_KEY) !== null && _a !== void 0 ? _a : '' },
                             body: JSON.stringify({ name: name }),
                         })];
                 case 2:
                     res = _b.sent();
-                    res.json();
-                    //try again if not succesfull
-                    if (res.status != 200 && attempt <= maxAttempts) {
-                        console.error('fetch-error | API: remove-cocktail | message: |' + res.json());
+                    bodyText = '<no-body>';
+                    _b.label = 3;
+                case 3:
+                    _b.trys.push([3, 5, , 6]);
+                    return [4 /*yield*/, res.text()];
+                case 4:
+                    bodyText = _b.sent();
+                    return [3 /*break*/, 6];
+                case 5:
+                    e_2 = _b.sent();
+                    bodyText = '<body-read-error>';
+                    return [3 /*break*/, 6];
+                case 6:
+                    // try again if not successful
+                    if (res.status !== 200 && attempt <= maxAttempts) {
+                        console.error('fetch-error | API: remove-cocktail | status: ' + res.status + ' | message: |' + bodyText);
                         delay = 200 * Math.pow(2, attempt);
                         setTimeout(function () { return postRemoveToApi(jsonPath, attempt + 1); }, delay);
                     }
-                    return [3 /*break*/, 4];
-                case 3:
+                    return [3 /*break*/, 8];
+                case 7:
                     ex_3 = _b.sent();
                     console.error('fetch-error | API: remove-cocktail | message: |' + (ex_3 instanceof Error ? ex_3.message : String(ex_3)));
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
+                    return [3 /*break*/, 8];
+                case 8: return [2 /*return*/];
             }
         });
     });
@@ -221,11 +245,13 @@ function run() {
             switch (_a.label) {
                 case 0:
                     console.log("waiting for import API to be availible");
-                    return [4 /*yield*/, waitForService('http://localhost:3000/api/import-api')];
+                    // Check the actual API endpoints used by the app
+                    return [4 /*yield*/, waitForService('http://localhost:3000/api/import-cocktail')];
                 case 1:
+                    // Check the actual API endpoints used by the app
                     _a.sent();
                     console.log("waiting for remove API to be availible");
-                    return [4 /*yield*/, waitForService('http://localhost:3000/api/remove-api')];
+                    return [4 /*yield*/, waitForService('http://localhost:3000/api/remove-cocktail')];
                 case 2:
                     _a.sent();
                     // start processing files and watching
