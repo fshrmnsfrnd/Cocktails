@@ -2,6 +2,7 @@
 import AllCocktails from "@/components/AllCocktails";
 import IngredientList from "@/components/IngredientList";
 import CategoryList from "@/components/CategoryList";
+import MustHaveIngredientList from "@/components/MustHaveIngredientList";
 import { useState, useEffect } from "react";
 import {
     Accordion,
@@ -9,15 +10,18 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
+import { getIntersection } from "@/tools/utils";
 
 export default function Home() {
     const [filteredCocktailIds, setFilteredCocktailIds] = useState<number[] | null>(null);
     const [ingFilteredIds, setIngFilteredIds] = useState<number[] | null>(null); //RecipeID filtered by Ingredient
     const [catFilteredIds, setCatFilteredIds] = useState<number[] | null>(null); //RecipeID filtered by Category
+    const [mustHaveIngsFilteredIds, setMustHaveIngsFilteredIds] = useState<number[] | null>(null); //RecipeID filtered by Category
     const [selectedPanel, setSelectedPanel] = useState<'cocktails' | 'ingredients'>('cocktails');
     const [ingredientSearch, setIngredientSearch] = useState<string>("");
     const [categorySearch, setCategorySearch] = useState<string>("");
     const [cocktailSearch, setCocktailSearch] = useState<string>("");
+    const [mustHaveIngredientSearch, setMustHaveIngredientSearch] = useState<string>("");
     const [missingAmount, setMissingAmount] = useState<number>();
 
     function decreaseAmount() {
@@ -28,36 +32,35 @@ export default function Home() {
         setMissingAmount((prev) => (prev ? prev + 1 : 1));
     };
 
-    function handleFilterChange(ids: number[] | null, source: 'ingredients' | 'categories') {
+    function handleFilterChange(ids: number[] | null, source: 'ingredients' | 'categories' | 'mustHaveIngredients') {
         let nextIng: number[] | null = ingFilteredIds;
         let nextCat: number[] | null = catFilteredIds;
+        let nextMustHaveIng: number[] | null = mustHaveIngsFilteredIds;
 
+        
         if (source === 'ingredients') {
             nextIng = ids === null ? null : Array.from(ids);
             setIngFilteredIds(ids === null ? null : (ids.length === 0 ? [] : ids));
-        } else {
+        } else if( source === 'categories'){
             nextCat = ids === null ? null : Array.from(ids);
             setCatFilteredIds(ids === null ? null : (ids.length === 0 ? [] : ids));
+        } else if (source === 'mustHaveIngredients') {
+            nextMustHaveIng = ids === null ? null : Array.from(ids);
+            setMustHaveIngsFilteredIds(ids === null ? null : (ids.length === 0 ? [] : ids));
         }
 
-        if (nextIng === null && nextCat === null) {
+        //If none is set show all
+        if (nextIng === null && nextCat === null && nextMustHaveIng === null) {
             setFilteredCocktailIds(null);
             return;
         }
 
-        if (nextIng !== null && nextCat === null) {
-            setFilteredCocktailIds(nextIng);
-            return;
-        }
-
-        if (nextIng === null && nextCat !== null) {
-            setFilteredCocktailIds(nextCat);
-            return;
-        }
-
-        // both null or empty
-        const ingSet = new Set(nextIng as number[]);
-        const intersection = (nextCat as number[]).filter(id => ingSet.has(id));
+        //else build intersection of the ones set
+        const intersection = getIntersection(
+            ...(nextIng ? [nextIng] : []),
+            ...(nextCat ? [nextCat] : []),
+            ...(nextMustHaveIng ? [nextMustHaveIng] : [])
+        );
         setFilteredCocktailIds(intersection);
         return;
     }
@@ -165,6 +168,28 @@ export default function Home() {
 
                                     {/*The List of Categories */}
                                     <CategoryList onFilterChange={handleFilterChange} searchTerm={categorySearch} />
+                                    <button className="button upButton"><a href="#">Nach oben</a></button>
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="mustHaveIngredientArea">
+                            <AccordionTrigger className="text-2xl">Must Have Zutaten</AccordionTrigger>
+                            <AccordionContent>
+                                <div className="categoryArea">
+                                    {/*Search Must have ingredient:*/}
+
+                                    <input
+                                        id="mustHaveIngredient-search"
+                                        className="input searchTextField"
+                                        type="text"
+                                        placeholder="Suchbegriff..."
+                                        value={mustHaveIngredientSearch}
+                                        onChange={(e) => setMustHaveIngredientSearch(e.target.value)}
+                                        aria-label="Suche Must Have Ingredients"
+                                    />
+
+                                    {/*The List of Categories */}
+                                    <MustHaveIngredientList onFilterChange={handleFilterChange} searchTerm={mustHaveIngredientSearch} />
                                     <button className="button upButton"><a href="#">Nach oben</a></button>
                                 </div>
                             </AccordionContent>

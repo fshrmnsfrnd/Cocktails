@@ -19,7 +19,7 @@ services:
       - 3000:3000
     volumes:
       - /path/to/md/recipes:/app/resources/Markdown
-	environment:
+	  environment:
       - EXT_API_KEY=Your_API_Key_Here
     restart: always
 ```
@@ -63,13 +63,19 @@ Wesentliche Ordner und Dateien:
 - **Beschreibung:** Gibt Cocktails zurück, die bestimmte Zutaten enthalten.
 - **Parameter:**
   - `ingredients` (erforderlich, Array von Strings): Liste der Zutaten.
-- **Antwort:** JSON-Array mit passenden Cocktail-Objekten.
+- **Antwort:** JSON-Array mit passenden Cocktail IDs.
 
 ### POST /api/cocktailsFilteredByCategories
 - **Beschreibung:** Gibt Cocktails zurück, die in den Kategorien sind enthalten.
 - **Parameter:**
   - `categories` (erforderlich, Array von Strings): Liste der Kategorien.
-- **Antwort:** JSON-Array mit passenden Cocktail-Objekten.
+- **Antwort:** JSON-Array mit passenden Cocktail IDs.
+
+### POST /api/cocktailsFilteredByCategories
+- **Beschreibung:** Gibt Cocktails zurück, die die zutaten enthalten.
+- **Parameter:**
+  - `ids` (erforderlich): Liste der Zutaten IDs.
+- **Antwort:** JSON-Array mit passenden Cocktail IDs.
 
 ### POST /api/import-cocktail
 - **Beschreibung:** Importiert ein neues Cocktail-Rezept.
@@ -82,7 +88,8 @@ Wesentliche Ordner und Dateien:
 
 ## Styling
 
-Globaler Stil: `app/globals.css`. Komponenten-spezifische Anpassungen: `components/landingpage.css`.
+Globaler Stil: `app/globals.css`. 
+Komponenten-spezifische Anpassungen: `components/landingpage.css`.
 
 Header-Layout: Die Startseite nutzt im Header zwei `.showArea`-Boxen ("Zutaten" und "Cocktails"). Im Querformat fungieren sie als Überschriften für jeweils die darunterliegenden Komponenten; im Hochformat kann der Nutzer per Klick auswählen, welche Komponente angezeigt wird (die andere wird nur ausgeblendet).
 

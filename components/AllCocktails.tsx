@@ -41,6 +41,7 @@ export default function AllCocktails({ filterIds, searchTerm}: Props) {
     
     let visible;
     if (Array.isArray(cocktails)){
+        //if null show all, else show filtered
         if (filterIds == null){
                 visible = cocktails;
         }else{
@@ -61,7 +62,7 @@ export default function AllCocktails({ filterIds, searchTerm}: Props) {
 
             {Array.isArray(visibleFiltered) && visibleFiltered.length === 0 && <div>No records found.</div>}
 
-            {Array.isArray(visibleFiltered) /*&& visibleFiltered.length > 0*/ && (
+            {Array.isArray(visibleFiltered)&& (
                 <div id="cocktailList">
                     {visibleFiltered.map((element, idx) => {
                         const cocktailID = element.Cocktail_ID ?? (idx + 1);
