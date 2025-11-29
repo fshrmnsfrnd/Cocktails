@@ -18,3 +18,13 @@ export function authorize(providedKey: string | null): boolean{
 
         return true;
 }
+
+export function getIntersection<T>(...arrays: T[][]): T[] {
+    if (arrays.length === 0) {
+        return [];
+    }
+
+    return arrays.reduce((acc, curr) => {
+        return acc.filter(item => curr.includes(item));
+    });
+}

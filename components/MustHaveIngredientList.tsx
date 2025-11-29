@@ -1,0 +1,184 @@
+'use client'
+import React, { useEffect, useState } from "react";
+import "./landingpage.css";
+
+type Ingredient = {
+    Ingredient_ID: number;
+    Name?: string;
+}
+
+type Props = {
+    // callback will be invoked with (ids, source).
+    onFilterChange?: (cocktailIds: number[] | null, source: 'ingredients' | 'categories' | 'mustHaveIngredients') => void;
+    searchTerm?: string | null;
+};
+
+export default function CategoryList({ onFilterChange, searchTerm}: Props) {
+
+    const [ingredients, setIngredients] = useState<Ingredient[] | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+
+    const COOKIE_NAME = 'selectedMustHaveIngredients';
+
+    function setCookie(name: string, value: string, days: number) {
+        try {
+            const d = new Date();
+            d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+            const expires = 'expires=' + d.toUTCString();
+            document.cookie = `${name}=${encodeURIComponent(value)}; ${expires}; path=/; SameSite=Lax`;
+        } catch (e) {
+            // ignore cookie errors in strict environments
+        }
+    }
+
+    function getCookie(name: string) {
+        try {
+            const cookies = document.cookie ? document.cookie.split('; ') : [];
+            const found = cookies.find(c => c.startsWith(name + '='));
+            if (!found) return null;
+            return decodeURIComponent(found.split('=').slice(1).join('='));
+        } catch (e) {
+            return null;
+        }
+    }
+
+    async function loadCocktails(): Promise<void> {
+        setError(null);
+        try {
+            const res = await fetch("/api/ingredients");
+            const ct = res.headers.get("content-type") || "";
+            let data: any;
+            if (ct.includes("application/json")) data = await res.json();
+            else data = await res.text();
+
+            if (Array.isArray(data)) {
+                setIngredients(data as Ingredient[]);
+            } else {
+                setIngredients(null);
+                setError(typeof data === 'string' ? data : 'Unexpected response');
+            }
+        } catch (err) {
+            setError(err instanceof Error ? err.message : String(err));
+            setIngredients(null);
+        }
+    }
+
+    useEffect(() => { loadCocktails(); }, []);
+
+    async function updateFilterFromSelection(newSelected: number[]) {
+        // no selection => show all
+        if (!newSelected || newSelected.length === 0) {
+            onFilterChange?.(null, 'mustHaveIngredients');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/cocktailsFilteredByMustHaveIngredients',  { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids: newSelected}),
+            });
+
+            const ct = res.headers.get('content-type') || '';
+            let data: any;
+            if (ct.includes('application/json')) data = await res.json();
+            else data = await res.text();
+
+            if (Array.isArray(data)) {
+                const ids = data.map((v: any) => Number(v)).filter((n: number) => Number.isFinite(n));
+                onFilterChange?.(ids, 'mustHaveIngredients');
+            } else {
+                // unexpected response -> clear filter
+                onFilterChange?.(null, 'mustHaveIngredients');
+            }
+        } catch (ex) {
+            onFilterChange?.(null, 'mustHaveIngredients');
+            setError(ex instanceof Error ? ex.message : String(ex));
+        }
+    }
+
+    function toggleSelection(id: number) {
+        setSelectedIds(prev => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            try {
+                const arr = Array.from(next.values());
+                setCookie(COOKIE_NAME, JSON.stringify(arr), 7);
+            } catch (e) {
+                // swallow cookie write errors
+            }
+            return next;
+        });
+    }
+
+    // Call API whenever selectedIds changes — avoid updating parent state during render
+    useEffect(() => {
+        updateFilterFromSelection(Array.from(selectedIds.values()));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedIds]);
+
+    // Restore selection from cookie after ingredients are loaded
+    useEffect(() => {
+        if (!Array.isArray(ingredients) || ingredients.length === 0) return;
+        try {
+            const raw = getCookie(COOKIE_NAME);
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed)) return;
+            const idNums = parsed.map((v: any) => {
+                const n = Number(v);
+                return Number.isFinite(n) ? Math.trunc(n) : null;
+            }).filter((v: number | null) => v !== null) as number[];
+
+            // Keep only ids that exist in the current ingredients list
+            const availableIds = new Set(ingredients.map(i => i.Ingredient_ID).filter(Boolean) as number[]);
+            const restored = idNums.filter(id => availableIds.has(id));
+            if (restored.length > 0) setSelectedIds(new Set(restored));
+        } catch (e) {
+            // ignore parse errors
+        }
+    }, [ingredients]);
+
+    const term = (searchTerm ?? '').trim().toLowerCase();
+    const filteredIngredients = Array.isArray(ingredients) ? ingredients.filter(i => {
+            if (!term) return true;
+            return (i.Name ?? '').toLowerCase().includes(term);
+        })
+        : [];
+
+    return (
+        <div className="categoriesArea">
+            {error && <div style={{ color: 'red' }}>Error: {error}</div>}
+
+            {Array.isArray(ingredients) && ingredients.length === 0 && <div>No records found</div>}
+
+            {Array.isArray(ingredients) && filteredIngredients.length === 0 && ingredients.length > 0 && (
+                <div>Keine Treffer</div>
+            )}
+
+            {filteredIngredients.length > 0 && (
+                <ul className="ul ingredientList">
+                    {filteredIngredients.map((element, idx) => {
+                        const ingredientID = element.Ingredient_ID ?? (idx + 1);
+                        const strId = `ingredient-${ingredientID}`;
+                        return (
+                            <li className="li" key={ingredientID}>
+                                <input
+                                    type="checkbox"
+                                    className="checkbox"
+                                    value={ingredientID}
+                                    id={strId}
+                                    checked={selectedIds.has(ingredientID)}
+                                    onChange={() => toggleSelection(ingredientID)}
+                                />
+                                <label className="label" htmlFor={strId}>{element.Name ?? "Unnamed Ingredient"}</label>
+                            </li>
+                        );
+                    })}
+                </ul>
+            )}
+        </div>
+    );
+}

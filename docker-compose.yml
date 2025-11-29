@@ -2,8 +2,6 @@
 services:
   cocktails:
     container_name: cocktails
-    # Wenn Compose das Image selbst bauen soll, verwendet es die unten stehende Build-Definition.
-    # Das `image`-Feld wird als Tag für das gebaute Image verwendet.
     build:
       context: .
       dockerfile: Dockerfile
