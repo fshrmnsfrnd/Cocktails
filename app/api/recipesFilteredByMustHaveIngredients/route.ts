@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
             `SELECT DISTINCT RI.Recipe_ID
             FROM Recipe_Ingredient RI
             WHERE RI.Ingredient_ID IN (${ids})
-            ORDER BY CI.Recipe_RD;`,
+            ORDER BY RI.Recipe_ID;`,
         );
 
         const recipeIds = Array.from(new Set(dbRes.map(row => row.Recipe_ID)));
