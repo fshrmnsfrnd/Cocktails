@@ -146,7 +146,6 @@ export default function Home() {
 
                                     {/*The List of Ingredients */}
                                     <IngredientList onFilterChange={handleFilterChange} searchTerm={ingredientSearch} amountMissingIngredients={missingAmount} />
-                                    <button className="button upButton"><a href="#">Nach oben</a></button>
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
@@ -168,7 +167,6 @@ export default function Home() {
 
                                     {/*The List of Categories */}
                                     <CategoryList onFilterChange={handleFilterChange} searchTerm={categorySearch} />
-                                    <button className="button upButton"><a href="#">Nach oben</a></button>
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
@@ -190,11 +188,11 @@ export default function Home() {
 
                                     {/*The List of Categories */}
                                     <MustHaveIngredientList onFilterChange={handleFilterChange} searchTerm={mustHaveIngredientSearch} />
-                                    <button className="button upButton"><a href="#">Nach oben</a></button>
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
                     </Accordion>
+                    <button className="button upButton"><a href="#">Nach oben</a></button>
                 </div>
 
                 {/*Right Side with the List of Recipes */}
